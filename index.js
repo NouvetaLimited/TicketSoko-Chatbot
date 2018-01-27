@@ -52,8 +52,10 @@ bot.onText(/\/events/, (msg,match) => {
                                 
                             </pre> 
                              `
-                bot.sendMessage(msg.chat.id, mesg, {parse_mode : "HTML"});
-                bot.sendPhoto(msg.chat.id, selectedEvent.image)
+                bot.sendMessage(msg.chat.id, mesg, {parse_mode : "HTML"})
+                .then(()=>{
+                    bot.sendPhoto(msg.chat.id, selectedEvent.image);
+                })         
             });
 
         })
