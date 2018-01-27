@@ -10,26 +10,50 @@ const bot = new TelegramBot(token, {
 });
 
 bot.onText(/\/events/, (msg,match) => {
-    const response = "here are the events"
     let events = []
     axios.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=getEvents')
         .then(response => {
             const data = response.data.data
             data.forEach(event => {
-                events.push( [event.Events.event_name] )
+                events.push({
+                    name: event.Events.event_name,
+                    venue: event.Events.event_venue,
+                    description: event.Events.event_description,
+                    date: event.Events.event_date,
+                    price:event.Options[0].OptionChoice[0].price,
+                    image : event.Events.event_image
+                })
             });    
         }).then(() => {
-            console.log(events);
-            bot.sendMessage(msg.chat.id, response, {
+             console.log(`!!!!!!!! ${events}`);
+            let event_names = events.map(event =>{
+                return[event.name]
+            })
+            bot.sendMessage(msg.chat.id, "The events Are:", {
                 "reply_markup" : {
-                    "keyboard": events,
+                    "keyboard": event_names,
                     "one_time_keyboard": false
                 }
             } )           
         }).then(() =>{
             bot.onText(/.+/g, function(msg, match) {
-                bot.sendMessage(msg.chat.id, "You selected " + match);
-                ///var selectedSerie = msg.query;
+                let selectedEvent = events.find( event => {
+                    return event.name  === match.input
+                })
+                console.log(`@@@@@@@@@@ ${match}`);
+                
+               //console.log(`###### ${selectedEvent.name}`);
+                let mesg = `
+                            <strong>${selectedEvent.name}</strong> 
+                            <pre>
+                                Price: KSH ${selectedEvent.price} 
+                                Venue: ${selectedEvent.venue}
+                                Date: ${selectedEvent.date}
+                                
+                            </pre> 
+                             `
+                bot.sendMessage(msg.chat.id, mesg, {parse_mode : "HTML"});
+                bot.sendPhoto(msg.chat.id, selectedEvent.image)
             });
 
         })
@@ -44,5 +68,5 @@ bot.on('message', (msg) => {
 });
 
 bot.on('polling_error', (error) => {
-    console.log(error.code);
+   // console.log(error.code);
 })
