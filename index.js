@@ -24,6 +24,7 @@ bot.onText(/\/events/, (msg,match) => {
                     ticketOptions : event.Options[0].OptionChoice,
                     image : event.Events.event_image
                 })
+                console.log(JSON.stringify(events))
                 
             });             
         }).then(() => {
