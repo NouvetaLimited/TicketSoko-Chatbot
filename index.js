@@ -21,18 +21,23 @@ bot.onText(/\/events/, (msg,match) => {
                     description: event.Events.event_description,
                     date: event.Events.event_date,
                     price:event.Options[0].OptionChoice[0].price,
+                    ticketOptions : event.Options[0].OptionChoice,
                     image : event.Events.event_image
                 })
-            });    
+                
+            });             
         }).then(() => {
              console.log(`!!!!!!!! ${events}`);
             let event_names = events.map(event =>{
                 return[event.name]
+                console.log(event.ticketOptions);
             })
+            
+            
             bot.sendMessage(msg.chat.id, "The events Are:", {
                 "reply_markup" : {
                     "keyboard": event_names,
-                    "one_time_keyboard": false
+                    "one_time_keyboard": true
                 }
             } )           
         }).then(() =>{
@@ -41,21 +46,30 @@ bot.onText(/\/events/, (msg,match) => {
                     return event.name  === match.input
                 })
                 console.log(`@@@@@@@@@@ ${match}`);
+                console.log("Here are the ticket options" + selectedEvent.ticketOptions[0]);
                 
-               //console.log(`###### ${selectedEvent.name}`);
+                
                 let mesg = `
                             <strong>${selectedEvent.name}</strong> 
                             <pre>
                                 Price: KSH ${selectedEvent.price} 
                                 Venue: ${selectedEvent.venue}
-                                Date: ${selectedEvent.date}
-                                
+                                Date: ${selectedEvent.date}   
                             </pre> 
+                            ${selectedEvent.image}
                              `
                 bot.sendMessage(msg.chat.id, mesg, {parse_mode : "HTML"})
-                .then(()=>{
-                    bot.sendPhoto(msg.chat.id, selectedEvent.image);
-                })         
+                // .then(()=>{
+                //     let event_options = events.map(option =>{
+                //         return[option.type, option.price]
+                //     })
+                    // bot.sendMessage(msg.chat.id, "here are the ticket  options for the event:", {
+                    //     "reply_markup" : {
+                    //         "keyboard": [[selectedEvent.ticketOptions]],
+                    //         "one_time_keyboard": true
+                    //     }
+                    // });
+                // })         
             });
 
         })

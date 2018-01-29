@@ -4,19 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Ticket Soko Api Axios</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <script>
       axios.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=getEvents')
       .then( response => {
+        console.log(response);
+        
         const data = response.data.data
         data.forEach(event => {
         console.log(event.Events.event_name);  
       }); 
 
     });
+
+    console.log("mpesa starts here");
+    axios.post('https://payme.nouveta.co.ke/api/v1/index.php?TransactionType="CustomerPayBillOnline"&PayBillNumber="175555"&Amount="5"&PhoneNumber="0708512358"&AccountReference="1234"&TransactionDesc="testing"').then(response =>{
+      console.log(response);
+      
+    }).catch(error => {
+      console.log(error);
+      
+    })
+    
         </script>
 </body>
+<h1></h1>
 </html>
