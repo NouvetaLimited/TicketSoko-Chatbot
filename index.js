@@ -63,7 +63,7 @@ bot.onText(/\/events/, (msg, match) => {
                 bot.sendMessage(msg.chat.id, "here are the ticket  options for the event:", {
                     "reply_markup": {
                         "keyboard": [
-                            [selectedEvent.type, selectedEvent]['back']
+                            [selectedEvent.type, selectedEvent.price]
                         ],
                         "one_time_keyboard": true
                     }
