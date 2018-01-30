@@ -65,7 +65,7 @@ bot.onText(/\/events/, (msg, match) => {
                         "keyboard": [
                             [selectedEvent.type, selectedEvent.price]
                         ],
-                        "one_time_keyboard": true
+                        "one_time_keyboard": false
                     }
                 });
                 bot.sendMessage(msg.chat.id, "how many tickets do you want?", {
