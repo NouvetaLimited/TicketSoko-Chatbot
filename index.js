@@ -185,7 +185,7 @@ function numberOfTicekts() {
                             };
                             bot.sendMessage(msg.chat.id, "Send your number to facilitate the transaction", options).then(() => {
 
-                        bot.on("contact", function (msg) {
+                        bot.once("contact", function (msg) {
                             const phoneNumber = "+" + msg.contact.phone_number
                             console.log("selected event in contact" + JSON.stringify(selectedEvent));
 
