@@ -20,6 +20,7 @@ let totalAmount = '';
     getEvents();
     selectedEventData();
     numberOfTicekts();
+    botShop();
 })()
 
 //Keyboards
@@ -36,16 +37,38 @@ const confirmKeyboard = [
 ]
 
 const ticketNumber = [
-[   {text:  "1"  },
-    { text: "2"  },
-    { text: "3"  },
-    { text: "4"  },
-    { text: "5"  } ],
-  [ { text: "6"  },
-    { text: "7"  },
-    { text: "8"  },
-    { text: "9"  },
-    { text: "10"} ] 
+    [{
+            text: "1"
+        },
+        {
+            text: "2"
+        },
+        {
+            text: "3"
+        },
+        {
+            text: "4"
+        },
+        {
+            text: "5"
+        }
+    ],
+    [{
+            text: "6"
+        },
+        {
+            text: "7"
+        },
+        {
+            text: "8"
+        },
+        {
+            text: "9"
+        },
+        {
+            text: "10"
+        }
+    ]
 ]
 
 
@@ -74,7 +97,7 @@ function getEvents() {
                         description: event.Events.event_description,
                         date: event.Events.event_date,
                         id: event.Events.id,
-                       ticketOptions: event.Options[0].OptionChoice.map(option => {
+                        ticketOptions: event.Options[0].OptionChoice.map(option => {
                             return {
                                 name: option.name,
                                 price: option.price
@@ -138,12 +161,11 @@ function selectedEventData() {
 }
 
 
-
 function numberOfTicekts() {
     bot.onText(/.+/g, function (msg, match) {
         if (ticketOptions) {
 
-           // bot.sendMessage(msg.chat.id, 'How many do you want?')
+            // bot.sendMessage(msg.chat.id, 'How many do you want?')
             console.log("this is ticket options inside number" + ticketOptions)
 
             let ticketOption = ticketOptions.find(option => {
@@ -164,87 +186,72 @@ function numberOfTicekts() {
                         "one_time_keyboard": true,
                         "resize_keyboard": true
                     })
-                    
+
                 }
                 bot.sendMessage(msg.chat.id, "How many tickets do you want?", ticketQuantity).then(() => {
                     bot.once("message", (msg) => {
                         let price = ticketOption[0].split(' ')
                         totalAmount = Number(price[price.length - 1]) * Number(msg.text)
-                                          
-                bot.sendMessage(msg.chat.id, `Your total is ${totalAmount}KSH. Are you sure you want to buy?`, confirmOptions).then(() => {
-                    bot.once("message", (msg) => {
-                        if (msg.text === "Yes") {
-                            console.log("Hello World!");
-                            const options = {
-                                "parse_mode": "Markdown",
-                                "reply_markup": JSON.stringify({
-                                    "keyboard": contactKeyboard,
-                                    "one_time_keyboard": true,
-                                    "resize_keyboard": true
-                                })
-                            };
-                            bot.sendMessage(msg.chat.id, "Send your number to facilitate the transaction", options).then(() => {
 
-                        bot.once("contact", function (msg) {
-                            const phoneNumber = "+" + msg.contact.phone_number
-                            console.log("selected event in contact" + JSON.stringify(selectedEvent));
+                        bot.sendMessage(msg.chat.id, `Your total is ${totalAmount}KSH. Are you sure you want to buy?`, confirmOptions).then(() => {
+                            bot.once("message", (msg) => {
+                                if (msg.text === "Yes") {
+                                    console.log("Hello World!");
+                                    const options = {
+                                        "parse_mode": "Markdown",
+                                        "reply_markup": JSON.stringify({
+                                            "keyboard": contactKeyboard,
+                                            "one_time_keyboard": true,
+                                            "resize_keyboard": true
+                                        })
+                                    };
+                                    bot.sendMessage(msg.chat.id, "Send your number to facilitate the transaction", options).then(() => {
 
-                            var postData = {
-                                totalSum: totalAmount,
-                                event_id: selectedEvent.id,
-                                phone_number: phoneNumber
-                            };
+                                        bot.once("contact", function (msg) {
+                                            const phoneNumber = "+" + msg.contact.phone_number
+                                            console.log("selected event in contact" + JSON.stringify(selectedEvent));
 
+                                            var postData = {
+                                                totalSum: totalAmount,
+                                                event_id: selectedEvent.id,
+                                                phone_number: phoneNumber
+                                            };
 
+                                            let axiosConfig = {
+                                                headers: {
+                                                    'Content-Type': 'application/json;charset=UTF-8',
+                                                    "Access-Control-Allow-Origin": "*",
 
-                            let axiosConfig = {
-                                headers: {
-                                    'Content-Type': 'application/json;charset=UTF-8',
-                                    "Access-Control-Allow-Origin": "*",
+                                                }
+                                            };
 
+                                            axios({
+                                                    method: 'post',
+                                                    url: process.env.PAYMENTS_API,
+                                                    headers: axiosConfig,
+                                                    data: postData
+                                                })
+                                                .then((res) => {
+                                                    const message = res.data.message;
+                                                    bot.sendMessage(msg.chat.id, message)
+                                                    console.log(selectedEvent.id);
+                                                    console.log(totalAmount);
+                                                })
+                                        })
+                                    });
                                 }
-                            };
-
-                            axios({
-                                    method: 'post',
-                                    url: process.env.PAYMENTS_API,
-                                    headers: axiosConfig,
-                                    data: postData
-                                })
-                                .then((res) => {
-                                    const message = res.data.message;
-                                    bot.sendMessage(msg.chat.id, message)
-                                    console.log(selectedEvent.id);
-                                    console.log(totalAmount);
-
-
-
-                                })
-
-
-
-
+                            })
                         })
-
-                            });
-
-                        }
-
                     })
-
                 })
-
-                    })
-                  
-
-                })
-
-
-
-
-
             }
         }
+    })
+}
+
+function botShop() {
+    bot.onText(/\/shop/, (msg, match) => {
+        bot.sendMessage(msg.chat.id, "Merchandise shop coming soon! Stay tuned!")
     })
 }
 
