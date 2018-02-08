@@ -117,7 +117,8 @@ function getEvents() {
                 bot.sendMessage(msg.chat.id, "The events Are:", {
                     "reply_markup": {
                         "keyboard": event_names,
-                        "one_time_keyboard": false
+                        "one_time_keyboard": false,
+                        "resize_keyboard": true
                     }
                 })
             })
@@ -151,7 +152,8 @@ function selectedEventData() {
                         bot.sendMessage(msg.chat.id, "here are the ticket  options for the event:", {
                             "reply_markup": {
                                 "keyboard": ticketOptions,
-                                "one_time_keyboard": true
+                                "one_time_keyboard": true,
+                                "resize_keyboard": true
                             }
                         });
                     })
@@ -212,9 +214,27 @@ function numberOfTicekts() {
                                             console.log("selected event in contact" + JSON.stringify(selectedEvent));
 
                                             var postData = {
+                                                OptionChoiceSelectedRegular: null,
+                                                valueRegular: null,
+                                                totalRegular: null,
+                                                OptionChoiceSelectedSeasonal: null,
+                                                valueSeasonal: null,
+                                                totalSeasonal: null,
+                                                totalItemNo1: null,
+                                                totalItemNo2: null,
+                                                totalItemNo3: null,
+                                                totalItemNo4: null,
+                                                totalItemNo5: null,
+                                                descriptionItemNo1: null,
+                                                descriptionItemNo2: null,
+                                                descriptionItemNo3: null,
+                                                descriptionItemNo4: null,
+                                                descriptionItemNo5: null,
                                                 totalSum: totalAmount,
                                                 event_id: selectedEvent.id,
+                                                event_company: null,
                                                 phone_number: phoneNumber
+
                                             };
 
                                             let axiosConfig = {
@@ -239,6 +259,8 @@ function numberOfTicekts() {
                                                 })
                                         })
                                     });
+                                } else if(msg.text === "No, Cancel Request"){
+                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n anything else I can do for you? \n send /start for a list of commands")
                                 }
                             })
                         })
