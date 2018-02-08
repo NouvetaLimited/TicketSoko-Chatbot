@@ -10,7 +10,7 @@ A Telegram bot to buy tickets from [ticketSoko](ticketsoko.com).
 Follow these steps to set-up the project in your local machine:
 
 ```shell
-git clone https://github.com/your/awesome-project.git
+git clone https://github.com/brianmituka/TicketSoko-Chatbot.git
 cd TicketSoko-Chatbot/
 npm install
 node index.js
