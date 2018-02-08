@@ -3,7 +3,8 @@
 # Ticket Soko telegram bot
 > powered by Nouveta
 
-A Telegram bot to buy tickets from [ticketSoko](ticketsoko.com).
+A Telegram bot to buy tickets from [ticketSoko](ticketsoko.com).  
+[Telegram](https://t.me/Ticketsoko_bot)
 
 ## Developing
 
@@ -29,4 +30,4 @@ gcp deploy index.js
 
 * view all events in ticket soko 
 * View prices and types of tickets available
-* Buy the tickets with and Lipa Na M-Pesa
+* Buy the tickets with Lipa Na M-Pesa
