@@ -1,7 +1,9 @@
+
 require('dotenv').config()
 const TelegramBot = require('node-telegram-bot-api')
 const token = '522240407:AAEL1Q3JrFGeOiLgSY-ctWL_pcYTyBSJLSw'
 const axios = require('axios')
+const needle = require('needle')
 
 console.log(process.env.TOKEN);
 
@@ -117,7 +119,7 @@ function getEvents() {
                 bot.sendMessage(msg.chat.id, "The events Are:", {
                     "reply_markup": {
                         "keyboard": event_names,
-                        "one_time_keyboard": false,
+                        "hide_keyboard": false,
                         "resize_keyboard": true
                     }
                 })
@@ -152,8 +154,9 @@ function selectedEventData() {
                         bot.sendMessage(msg.chat.id, "here are the ticket  options for the event:", {
                             "reply_markup": {
                                 "keyboard": ticketOptions,
-                                "one_time_keyboard": true,
-                                "resize_keyboard": true
+                                "hide_keyboard": true,
+                                "resize_keyboard": true,
+                                "one_time_keyboard": true
                             }
                         });
                     })
@@ -178,6 +181,7 @@ function numberOfTicekts() {
 
                     reply_markup: JSON.stringify({
                         keyboard: confirmKeyboard,
+                        "hide_keyboard": true,
                         "one_time_keyboard": true,
                         "resize_keyboard": true
                     })
@@ -185,8 +189,9 @@ function numberOfTicekts() {
                 const ticketQuantity = {
                     reply_markup: JSON.stringify({
                         keyboard: ticketNumber,
+                        "hide_keyboard": true,
+                        "resize_keyboard": true,
                         "one_time_keyboard": true,
-                        "resize_keyboard": true
                     })
 
                 }
@@ -203,8 +208,9 @@ function numberOfTicekts() {
                                         "parse_mode": "Markdown",
                                         "reply_markup": JSON.stringify({
                                             "keyboard": contactKeyboard,
-                                            "one_time_keyboard": true,
-                                            "resize_keyboard": true
+                                            "hide_keyboard": true,
+                                            "resize_keyboard": true,
+                                            "one_time_keyboard": true
                                         })
                                     };
                                     bot.sendMessage(msg.chat.id, "Send your number to facilitate the transaction", options).then(() => {
@@ -213,50 +219,25 @@ function numberOfTicekts() {
                                             const phoneNumber = "+" + msg.contact.phone_number
                                             console.log("selected event in contact" + JSON.stringify(selectedEvent));
 
-                                            var postData = {
-                                                OptionChoiceSelectedRegular: null,
-                                                valueRegular: null,
-                                                totalRegular: null,
-                                                OptionChoiceSelectedSeasonal: null,
-                                                valueSeasonal: null,
-                                                totalSeasonal: null,
-                                                totalItemNo1: null,
-                                                totalItemNo2: null,
-                                                totalItemNo3: null,
-                                                totalItemNo4: null,
-                                                totalItemNo5: null,
-                                                descriptionItemNo1: null,
-                                                descriptionItemNo2: null,
-                                                descriptionItemNo3: null,
-                                                descriptionItemNo4: null,
-                                                descriptionItemNo5: null,
-                                                totalSum: totalAmount,
-                                                event_id: selectedEvent.id,
-                                                event_company: null,
+                                                valueRegular: null
+                                                totalSum: totalAmount
+                                                event_id: selectedEvent.id
                                                 phone_number: phoneNumber
+                                                needle.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=checkOut',{
+                                                   valueRegular: '2',
+                                                   totalSum: totalAmount,
+                                                   event_id: selectedEvent.id,
+                                                   phone_number: phoneNumber 
+                                                },
+                                                function(err, resp, body){
+                                                    const ParseConfirmMessage = JSON.parse(body)
+                                                    const confirmMessage = ParseConfirmMessage.message;
+                                                    bot.sendMessage(msg.chat.id, confirmMessage)
+                                                    
+                                                } 
+                                            )
 
-                                            };
-
-                                            let axiosConfig = {
-                                                headers: {
-                                                    'Content-Type': 'application/json;charset=UTF-8',
-                                                    "Access-Control-Allow-Origin": "*",
-
-                                                }
-                                            };
-
-                                            axios({
-                                                    method: 'post',
-                                                    url: process.env.PAYMENTS_API,
-                                                    headers: axiosConfig,
-                                                    data: postData
-                                                })
-                                                .then((res) => {
-                                                    const message = res.data.message;
-                                                    bot.sendMessage(msg.chat.id, message)
-                                                    console.log(selectedEvent.id);
-                                                    console.log(totalAmount);
-                                                })
+ 
                                         })
                                     });
                                 } else if(msg.text === "No, Cancel Request"){
