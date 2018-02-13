@@ -197,8 +197,9 @@ function numberOfTicekts() {
                 }
                 bot.sendMessage(msg.chat.id, "How many tickets do you want?", ticketQuantity).then(() => {
                     bot.once("message", (msg) => {
+                        const ticketValue = msg.text
                         let price = ticketOption[0].split(' ')
-                        totalAmount = Number(price[price.length - 1]) * Number(msg.text)
+                        totalAmount = Number(price[price.length - 1]) * Number(ticketValue)
 
                         bot.sendMessage(msg.chat.id, `Your total is ${totalAmount}KSH. Are you sure you want to buy?`, confirmOptions).then(() => {
                             bot.once("message", (msg) => {
@@ -224,15 +225,19 @@ function numberOfTicekts() {
                                                 event_id: selectedEvent.id
                                                 phone_number: phoneNumber
                                                 needle.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=checkOut',{
-                                                   valueRegular: '2',
+                                                   valueRegular: ticketValue,
                                                    totalSum: totalAmount,
                                                    event_id: selectedEvent.id,
                                                    phone_number: phoneNumber 
                                                 },
+
                                                 function(err, resp, body){
                                                     const ParseConfirmMessage = JSON.parse(body)
                                                     const confirmMessage = ParseConfirmMessage.message;
-                                                    bot.sendMessage(msg.chat.id, confirmMessage)
+                                                    bot.sendMessage(msg.chat.id, confirmMessage);
+                                                    console.log(ticketValue);
+                                                    
+                                                    
                                                     
                                                 } 
                                             )
