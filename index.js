@@ -5,16 +5,16 @@ const TelegramBot = require('node-telegram-bot-api')
 const axios = require('axios')
 const needle = require('needle')
 const token = process.env.TOKEN
-const port = process.env.PORT || 443
-const host = '0.0.0.0'
-const externalUrl = 'process.env.CUSTOM_ENV_VARIABLE' || 'https://infinite-ravine-15187.herokuapp.com'
+const options = {
+    webHook: {
+        port : process.env.PORT
+    }
+}
+const url = 'process.env.APP_URL' || 'https://infinite-ravine-15187.herokuapp.com:443'
 
-const bot = new TelegramBot(token, {
-    webHook: {port : port, host:host}
-    //polling: true
-});
+const bot = new TelegramBot(token, options);
 
-bot.setWebHook(externalUrl + ':443/bot' + token)
+bot.setWebHook(`${url}/bot${token}`)
 
 let events = [];
 let selectedEvent = '';
