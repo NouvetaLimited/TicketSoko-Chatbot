@@ -1,17 +1,17 @@
 
 require('dotenv').config()
 const TelegramBot = require('node-telegram-bot-api')
-const token = '522240407:AAEL1Q3JrFGeOiLgSY-ctWL_pcYTyBSJLSw'
+//const token = '522240407:AAEL1Q3JrFGeOiLgSY-ctWL_pcYTyBSJLSw'
 const axios = require('axios')
 const needle = require('needle')
-token = process.env.TOKEN
-port = process.env.PORT || 443
-host = '0.0.0.0'
-externalUrl = 'process.env.CUSTOM_ENV_VARIABLE' || 'https://infinite-ravine-15187.herokuapp.com'
+const token = process.env.TOKEN
+const port = process.env.PORT || 443
+const host = '0.0.0.0'
+const externalUrl = 'process.env.CUSTOM_ENV_VARIABLE' || 'https://infinite-ravine-15187.herokuapp.com'
 
 const bot = new TelegramBot(token, {
-    webHook: {port : port, host:host},
-    polling: true
+    webHook: {port : port, host:host}
+    //polling: true
 });
 
 bot.setWebHook(externalUrl + ':443/bot' + token)
