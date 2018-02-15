@@ -205,7 +205,7 @@ function numberOfTicekts() {
                                         "parse_mode": "Markdown",
                                         "reply_markup": JSON.stringify({
                                             "keyboard": contactKeyboard,
-                                            "hide_keyboard": false,
+                                            "hide_keyboard": true,
                                             "resize_keyboard": true,
                                             "one_time_keyboard": true
                                         })
