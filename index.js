@@ -7,14 +7,17 @@ const needle = require('needle')
 const token = process.env.TOKEN
 const options = {
     webHook: {
-        port : process.env.PORT
+        port : process.env.PORT,
+        host : '0.0.0.0'
     }
 }
-const url = 'process.env.APP_URL' || 'https://infinite-ravine-15187.herokuapp.com:443'
+const url = 'process.env.APP_URL' || 'https://infinite-ravine-15187.herokuapp.com:8443'
 
-const bot = new TelegramBot(token, options);
+const bot = new TelegramBot(token, {
+    polling: true
+});
 
-bot.setWebHook(`${url}/bot${token}`)
+//bot.setWebHook(`${url}/app${token}`)
 
 let events = [];
 let selectedEvent = '';
@@ -251,7 +254,7 @@ function numberOfTicekts() {
                                         })
                                     });
                                 } else if(msg.text === "No, Cancel Request"){
-                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n anything else I can do for you? \n send /start for a list of commands")
+                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n send /start for a list of commands")
                                 }
                             })
                         })

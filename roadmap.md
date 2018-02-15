@@ -4,7 +4,7 @@
 
 * [x] Fix the bug where ticket status is sent twice  
 * [x] Add a better information about the bot
-* [ ] Fix the checkout api just sending the same message even with fake parameters 
+* [x] Fix the checkout api just sending the same message even with fake parameters 
 * [ ] Add a home button that takes the users back to events keyboard   
 * [ ] Find a way of getting the number of bot users  
 * [ ] Find a way of sending notifications to the users of the bot  
