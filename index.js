@@ -1,23 +1,13 @@
 
-require('dotenv').config()
 const TelegramBot = require('node-telegram-bot-api')
-//const token = '522240407:AAEL1Q3JrFGeOiLgSY-ctWL_pcYTyBSJLSw'
+const token = '522240407:AAEL1Q3JrFGeOiLgSY-ctWL_pcYTyBSJLSw'
 const axios = require('axios')
 const needle = require('needle')
-const token = process.env.TOKEN
-const options = {
-    webHook: {
-        port : process.env.PORT,
-        host : '0.0.0.0'
-    }
-}
-const url = 'process.env.APP_URL' || 'https://infinite-ravine-15187.herokuapp.com:8443'
 
 const bot = new TelegramBot(token, {
     polling: true
 });
 
-//bot.setWebHook(`${url}/app${token}`)
 
 let events = [];
 let selectedEvent = '';
@@ -96,7 +86,7 @@ function getEvents() {
         events = []
         selectedEvent = '';
         ticketOptions = '';
-        axios.post(process.env.EVENTS_API)
+        axios.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=getEvents')
 
             .then(response => {
                 const data = response.data.data
@@ -177,8 +167,6 @@ function selectedEventData() {
 function numberOfTicekts() {
     bot.onText(/.+/g, function (msg, match) {
         if (ticketOptions) {
-
-            // bot.sendMessage(msg.chat.id, 'How many do you want?')
             console.log("this is ticket options inside number" + ticketOptions)
 
             let ticketOption = ticketOptions.find(option => {
