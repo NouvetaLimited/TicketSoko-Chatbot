@@ -152,7 +152,7 @@ function selectedEventData() {
                         bot.sendMessage(msg.chat.id, "here are the ticket  options for the event:", {
                             "reply_markup": {
                                 "keyboard": ticketOptions,
-                                "hide_keyboard": true,
+                                "hide_keyboard": false,
                                 "resize_keyboard": true,
                                 "one_time_keyboard": true
                             }
@@ -185,7 +185,7 @@ function numberOfTicekts() {
                 const ticketQuantity = {
                     reply_markup: JSON.stringify({
                         keyboard: ticketNumber,
-                        "hide_keyboard": true,
+                        "hide_keyboard": false,
                         "resize_keyboard": true,
                         "one_time_keyboard": true,
                     })
@@ -205,7 +205,7 @@ function numberOfTicekts() {
                                         "parse_mode": "Markdown",
                                         "reply_markup": JSON.stringify({
                                             "keyboard": contactKeyboard,
-                                            "hide_keyboard": true,
+                                            "hide_keyboard": false,
                                             "resize_keyboard": true,
                                             "one_time_keyboard": true
                                         })
@@ -215,11 +215,6 @@ function numberOfTicekts() {
                                         bot.once("contact", function (msg) {
                                             const phoneNumber = "+" + msg.contact.phone_number
                                             console.log("selected event in contact" + JSON.stringify(selectedEvent));
-
-                                                valueRegular: null
-                                                totalSum: totalAmount
-                                                event_id: selectedEvent.id
-                                                phone_number: phoneNumber
                                                 needle.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=checkOut',{
                                                    valueRegular: ticketValue,
                                                    totalSum: totalAmount,
