@@ -1,6 +1,6 @@
 ---
 applications:
-- instances: 1
+- instances: 4
   timeout: 180
   name: TicketSokoChatbot
   buildpack: sdk-for-nodejs
