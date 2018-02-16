@@ -80,7 +80,6 @@ function start() {
 
     })
 }
-
 function getEvents() {
     bot.onText(/\/events/, (msg, match) => {
         events = []
@@ -205,7 +204,6 @@ function numberOfTicekts() {
                                         "parse_mode": "Markdown",
                                         "reply_markup": JSON.stringify({
                                             "keyboard": contactKeyboard,
-                                            "hide_keyboard": true,
                                             "resize_keyboard": true,
                                             "one_time_keyboard": true
                                         })
