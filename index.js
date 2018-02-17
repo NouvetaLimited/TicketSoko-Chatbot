@@ -27,7 +27,7 @@ let totalAmount = '';
 const contactKeyboard = [[{
     text: "Allow transaction",
     request_contact: true
-}], [{text: 'RETURN TO EVENTS'}]]
+}], [{text: 'HOME'}]]
 
 const confirmKeyboard = [
     ['Yes'],
