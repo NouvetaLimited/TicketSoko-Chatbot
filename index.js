@@ -24,15 +24,17 @@ let totalAmount = '';
 })()
 
 //Keyboards
-const contactKeyboard = [
-    [{
-        text: "Allow transaction",
-        request_contact: true
-    }]
-]
+const contactKeyboard = [[{
+    text: "Allow transaction",
+    request_contact: true
+}], [{text: 'RETURN TO EVENTS'}]]
+
 const confirmKeyboard = [
     ['Yes'],
-    ['No, Cancel Request']
+    ['No, Cancel Request'], 
+    [{
+        text: 'HOME'
+    }]
 
 ]
 
@@ -82,46 +84,51 @@ function start() {
 }
 function getEvents() {
     bot.onText(/\/events/, (msg, match) => {
-        events = []
-        selectedEvent = '';
-        ticketOptions = '';
-        axios.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=getEvents')
+        fetchEvents(msg)
 
-            .then(response => {
-                const data = response.data.data
-                data.forEach(event => {
-                    events.push({
-                        name: event.Events.event_name,
-                        venue: event.Events.event_venue,
-                        description: event.Events.event_description,
-                        date: event.Events.event_date,
-                        id: event.Events.id,
-                        ticketOptions: event.Options[0].OptionChoice.map(option => {
-                            return {
-                                name: option.name,
-                                price: option.price
-                            }
-                        }),
-                        image: event.Events.event_image
-                    })
-                });
-                console.log(events);
-
-
-            })
-            .then(() => {
-                let event_names = events.map(event => {
-                    return [event.name]
-                })
-                bot.sendMessage(msg.chat.id, "The events Are:", {
-                    "reply_markup": {
-                        "keyboard": event_names,
-                        "hide_keyboard": false,
-                        "resize_keyboard": true
-                    }
-                })
-            })
     });
+}
+
+function fetchEvents (msg){
+    events = []
+    selectedEvent = '';
+    ticketOptions = '';
+    axios.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=getEvents')
+
+        .then(response => {
+            const data = response.data.data
+            data.forEach(event => {
+                events.push({
+                    name: event.Events.event_name,
+                    venue: event.Events.event_venue,
+                    description: event.Events.event_description,
+                    date: event.Events.event_date,
+                    id: event.Events.id,
+                    ticketOptions: event.Options[0].OptionChoice.map(option => {
+                        return {
+                            name: option.name,
+                            price: option.price
+                        }
+                    }),
+                    image: event.Events.event_image
+                })
+            });
+            console.log(events);
+
+
+        })
+        .then(() => {
+            let event_names = events.map(event => {
+                return [event.name]
+            })
+            bot.sendMessage(msg.chat.id, "The events are:", {
+                "reply_markup": {
+                    "keyboard": event_names,
+                    "hide_keyboard": false,
+                    "resize_keyboard": true
+                }
+            })
+        })
 }
 
 function selectedEventData() {
@@ -251,6 +258,12 @@ function botShop() {
         bot.sendMessage(msg.chat.id, "Merchandise shop coming soon! Stay tuned!")
     })
 }
+
+bot.on("message", (msg)=> {
+    if(msg.text === 'HOME'){
+        fetchEvents(msg)
+    }
+})
 
 
 bot.on('polling_error', (error) => {
