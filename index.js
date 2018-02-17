@@ -113,7 +113,7 @@ function fetchEvents (msg){
                     image: event.Events.event_image
                 })
             });
-            console.log(events);
+           // console.log(events);
 
 
         })
@@ -173,7 +173,7 @@ function selectedEventData() {
 function numberOfTicekts() {
     bot.onText(/.+/g, function (msg, match) {
         if (ticketOptions) {
-            console.log("this is ticket options inside number" + ticketOptions)
+            //console.log("this is ticket options inside number" + ticketOptions)
 
             let ticketOption = ticketOptions.find(option => {
                 return option == match.input
@@ -219,7 +219,7 @@ function numberOfTicekts() {
 
                                         bot.once("contact", function (msg) {
                                             const phoneNumber = "+" + msg.contact.phone_number
-                                            console.log("selected event in contact" + JSON.stringify(selectedEvent));
+                                           // console.log("selected event in contact" + JSON.stringify(selectedEvent));
                                                 needle.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=checkOut',{
                                                    valueRegular: ticketValue,
                                                    totalSum: totalAmount,
@@ -231,7 +231,7 @@ function numberOfTicekts() {
                                                     const ParseConfirmMessage = JSON.parse(body)
                                                     const confirmMessage = ParseConfirmMessage.message;
                                                     bot.sendMessage(msg.chat.id, confirmMessage);
-                                                    console.log(ticketValue);
+                                                   // console.log(ticketValue);
                                                     
                                                     
                                                     
