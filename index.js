@@ -13,7 +13,7 @@ const options = {
  
 
 
-  const url = 'https://ticketsokochatbot-ectomorphic-countercheck.eu-gb.mybluemix.net/'
+  const url = 'https://ticketsokochatbot-gastroenterological-danaite.eu-gb.mybluemix.net/'
   const bot = new TelegramBot(token, options)
 
   bot.setWebHook(`${url}/bot${token}`);
