@@ -6,6 +6,7 @@ image:
   repository: registry.ng.bluemix.net/replace-me-namespace/ticketsokochatbot
   tag: v1.0.0
   pullPolicy: Always
+  pullSecret: regsecret
   resources:
     requests:
       cpu: 200m
@@ -36,5 +37,3 @@ base:
 istio:
   enabled: false
   weight: 100
-prometheus:
-  enabled: false
