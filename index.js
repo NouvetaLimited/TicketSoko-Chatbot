@@ -5,18 +5,19 @@ const axios = require('axios')
 const needle = require('needle')
 const options = {
     webHook: {
-     
-         port : process.env.VCAP_APP_PORT || 8080
-      
+
+        port: process.env.VCAP_APP_PORT || 8080
+
     }
-  }
- 
+}
 
 
-  const url = 'https://ticketsokochatbot-gastroenterological-danaite.eu-gb.mybluemix.net/'
-  const bot = new TelegramBot(token, options)
 
-  bot.setWebHook(`${url}/bot${token}`);
+const url = 'https://ticketsokochatbot-gastroenterological-danaite.eu-gb.mybluemix.net/'
+const bot = new TelegramBot(token, options)
+
+bot.setWebHook(`${url}/bot${token}`);
+
 
 
 
@@ -24,25 +25,32 @@ let events = [];
 let selectedEvent = '';
 let ticketOptions = '';
 let totalAmount = '';
-
+let orderNumber = '';
+let data = '';
+let status = '';
 // initialize bot
 (function () {
-    start();
     getEvents();
     selectedEventData();
     numberOfTicekts();
     botShop();
 })()
 
+
 //Keyboards
-const contactKeyboard = [[{
-    text: "Allow transaction",
-    request_contact: true
-}], [{text: 'HOME'}]]
+const contactKeyboard = [
+    [{
+        text: "Allow transaction",
+        request_contact: true
+    }],
+    [{
+        text: 'HOME'
+    }]
+]
 
 const confirmKeyboard = [
     ['Yes'],
-    ['No, Cancel Request'], 
+    ['No, Cancel Request'],
     [{
         text: 'HOME'
     }]
@@ -85,23 +93,14 @@ const ticketNumber = [
 ]
 
 
-function start() {
-    bot.onText(/\/start/, (msg, match) => {
-        let firstName = msg.from.first_name
-        let welcomeMessage = "Hello " + firstName + " here are the commands you can use: \n 1. /events - get all the events and ticket prices \n 2. /start - get usage instructions \n 3. /about - info about the bot"
-        bot.sendMessage(msg.from.id, welcomeMessage)
 
-    })
-}
 function getEvents() {
-    bot.onText(/\/events/, (msg, match) => {
+    bot.onText(/\/start/, (msg, match) => {
         fetchEvents(msg)
-        console.log( "this is the cloudfoundry port" + port);
-
     });
 }
 
-function fetchEvents (msg){
+function fetchEvents(msg) {
     events = []
     selectedEvent = '';
     ticketOptions = '';
@@ -109,6 +108,8 @@ function fetchEvents (msg){
 
         .then(response => {
             const data = response.data.data
+            console.log(data);
+
             data.forEach(event => {
                 events.push({
                     name: event.Events.event_name,
@@ -123,18 +124,20 @@ function fetchEvents (msg){
                         }
                     }),
                     image: event.Events.event_image,
-                    
+                    company: event.Events.event_company
                 })
             });
-           // console.log(events);
+            console.log(events);
 
 
+        }).catch(error => {
+            console.log(error);
         })
         .then(() => {
             let event_names = events.map(event => {
                 return [event.name]
             })
-            bot.sendMessage(msg.chat.id, "The events are:", {
+            bot.sendMessage(msg.chat.id, "The events Are:", {
                 "reply_markup": {
                     "keyboard": event_names,
                     "hide_keyboard": false,
@@ -153,20 +156,20 @@ function selectedEventData() {
             console.log(`this is  selected event ${selectedEvent}`);
             if (selectedEvent) {
                 let mesg = `
-                            <strong>${selectedEvent.name}</strong> 
-                            <pre>
-                                ${selectedEvent.name}
-                                Venue: ${selectedEvent.venue}
-                                Date: ${selectedEvent.date}   
-                            </pre> 
-                            ${selectedEvent.image}
-                                `
+                              <strong>${selectedEvent.name}</strong> 
+                              <pre>
+                                  ${selectedEvent.name}
+                                  Venue: ${selectedEvent.venue}
+                                  Date: ${selectedEvent.date}   
+                              </pre> 
+                                  `
+
                 bot.sendMessage(msg.chat.id, mesg, {
                         parse_mode: "HTML"
                     })
                     .then(() => {
                         ticketOptions = selectedEvent.ticketOptions.map(option => {
-                            return [`${option.name.toString()} KSH ${option.price.toString()}`]
+                            return [`${option.name.toString()} KES ${option.price.toString()}`]
                         })
                         bot.sendMessage(msg.chat.id, "here are the ticket  options for the event:", {
                             "reply_markup": {
@@ -177,6 +180,8 @@ function selectedEventData() {
                             }
                         });
                     })
+                let picture = selectedEvent.image
+                bot.sendPhoto(msg.chat.id, picture)
             }
         }
     })
@@ -186,7 +191,7 @@ function selectedEventData() {
 function numberOfTicekts() {
     bot.onText(/.+/g, function (msg, match) {
         if (ticketOptions) {
-            //console.log("this is ticket options inside number" + ticketOptions)
+            console.log("this is ticket options inside number" + ticketOptions)
 
             let ticketOption = ticketOptions.find(option => {
                 return option == match.input
@@ -209,6 +214,7 @@ function numberOfTicekts() {
                         "one_time_keyboard": true,
                     })
 
+
                 }
                 bot.sendMessage(msg.chat.id, "How many tickets do you want?", ticketQuantity).then(() => {
                     bot.once("message", (msg) => {
@@ -216,7 +222,7 @@ function numberOfTicekts() {
                         let price = ticketOption[0].split(' ')
                         totalAmount = Number(price[price.length - 1]) * Number(ticketValue)
 
-                        bot.sendMessage(msg.chat.id, `Your total is KES ${totalAmount}. Are you sure you want to buy the ticket?`, confirmOptions).then(() => {
+                        bot.sendMessage(msg.chat.id, `Your total is KES ${totalAmount}. Are you sure you want to buy?`, confirmOptions).then(() => {
                             bot.once("message", (msg) => {
                                 if (msg.text === "Yes") {
                                     console.log("Hello World!");
@@ -231,30 +237,83 @@ function numberOfTicekts() {
                                     bot.sendMessage(msg.chat.id, "Send your number to facilitate the transaction", options).then(() => {
 
                                         bot.once("contact", function (msg) {
-                                            const phoneNumber = "+" + msg.contact.phone_number
-                                           // console.log("selected event in contact" + JSON.stringify(selectedEvent));
-                                                needle.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=checkOut',{
-                                                   valueRegular: ticketValue,
-                                                   totalSum: totalAmount,
-                                                   event_id: selectedEvent.id,
-                                                   phone_number: phoneNumber 
-                                                },
+                                            const phoneNumber = msg.contact.phone_number
+                                            console.log("selected event in contact" + JSON.stringify(selectedEvent));
 
-                                                function(err, resp, body){
-                                                    const ParseConfirmMessage = JSON.parse(body)
+
+                                            needle('post', 'https://ticketsoko.nouveta.co.ke/api/index.php?function=checkOut', {
+                                                    valueRegular: ticketValue,
+                                                    totalSum: totalAmount,
+                                                    event_id: selectedEvent.id,
+                                                    phone_number: phoneNumber,
+                                                    event_company: selectedEvent.company,
+                                                    OptionChoiceSelectedRegular: ticketOption
+                                                })
+                                                .then((resp) => {
+                                                    console.log('#####', ticketOption);
+                                                    const ParseConfirmMessage = JSON.parse(resp.body)
                                                     const confirmMessage = ParseConfirmMessage.message;
-                                                    bot.sendMessage(msg.chat.id, confirmMessage);
-                                                   // console.log(ticketValue);
-                                                    
-                                                   '297A1C'    
-                                                    
-                                                } 
-                                            )
+                                                    orderNumber = ParseConfirmMessage.data
+                                                    // console.log(orderNumber);
+                                                    bot.sendMessage(msg.chat.id, confirmMessage)
+                                                    setTimeout(() => {
 
- 
+                                                        needle('post', 'http://ticketsoko.nouveta.co.ke/api/index.php?function=paymentCallBack', {
+                                                                order_number: orderNumber,
+                                                                phone_number: phoneNumber,
+                                                                amount_paid: totalAmount,
+                                                                code: 'XBRB-IENE-KELE',
+                                                                payment_method: 'Mpesa'
+                                                            })
+                                                            .then(function (resp) {
+                                                                console.log(resp.body);
+                                                                needle('post', 'http://ticketsoko.nouveta.co.ke/api/index.php?function=checkTicketsPayments', {
+                                                                        order_number: orderNumber
+                                                                    })
+                                                                    .then((resp) => {
+                                                                        console.log(resp.body);
+                                                                        const parseReceivedPayments = JSON.parse(resp.body)
+                                                                        status = parseReceivedPayments.success
+                                                                        data = parseReceivedPayments.data
+                                                                        console.log(data);
+                                                                        console.log(orderNumber);
+
+
+
+                                                                        if (data != null) {
+                                                                            let resultString = "";
+                                                                            data.map(singleTicket => {
+                                                                                resultString += singleTicket + " \n";
+                                                                            });
+                                                                            bot.sendMessage(msg.chat.id, "request received, you'll get a confirmation shortly ").then(() => {
+                                                                                bot.sendMessage(msg.chat.id, resultString)
+                                                                            })
+
+
+                                                                        } else if (data === null) {
+                                                                            bot.sendMessage(msg.chat.id, "Sorry, request unsuccessful")
+
+                                                                        }
+
+
+
+
+                                                                    })
+                                                            })
+
+
+
+
+                                                    }, 30000);
+
+
+                                                })
+
+
+
                                         })
                                     });
-                                } else if(msg.text === "No, Cancel Request"){
+                                } else if (msg.text === "No, Cancel Request") {
                                     bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n send /start for a list of commands")
                                 }
                             })
@@ -272,12 +331,11 @@ function botShop() {
     })
 }
 
-bot.on("message", (msg)=> {
-    if(msg.text === 'HOME'){
+bot.on("message", (msg) => {
+    if (msg.text === 'HOME') {
         fetchEvents(msg)
     }
 })
-
 
 bot.on('polling_error', (error) => {
     console.log(error);
