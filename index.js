@@ -137,7 +137,7 @@ function fetchEvents(msg) {
             let event_names = events.map(event => {
                 return [event.name]
             })
-            bot.sendMessage(msg.chat.id, "The events Are:", {
+            bot.sendMessage(msg.chat.id, "The events are:", {
                 "reply_markup": {
                     "keyboard": event_names,
                     "hide_keyboard": false,
@@ -314,7 +314,7 @@ function numberOfTicekts() {
                                         })
                                     });
                                 } else if (msg.text === "No, Cancel Request") {
-                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n send /start for a list of commands")
+                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n send /start to view events")
                                 }
                             })
                         })
