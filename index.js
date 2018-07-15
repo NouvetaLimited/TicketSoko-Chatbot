@@ -247,7 +247,8 @@ function numberOfTicekts() {
                                                     event_id: selectedEvent.id,
                                                     phone_number: phoneNumber,
                                                     event_company: selectedEvent.company,
-                                                    OptionChoiceSelectedRegular: ticketOption
+                                                    OptionChoiceSelectedRegular: ticketOption,
+                                                    event_image: selectedEvent.image
                                                 })
                                                 .then((resp) => {
                                                     console.log('#####', ticketOption);
@@ -257,16 +258,8 @@ function numberOfTicekts() {
                                                     // console.log(orderNumber);
                                                     bot.sendMessage(msg.chat.id, confirmMessage)
                                                     setTimeout(() => {
-
-                                                        needle('post', 'http://ticketsoko.nouveta.co.ke/api/index.php?function=paymentCallBack', {
-                                                                order_number: orderNumber,
-                                                                phone_number: phoneNumber,
-                                                                amount_paid: totalAmount,
-                                                                code: 'XBRB-IENE-KELE',
-                                                                payment_method: 'Mpesa'
-                                                            })
-                                                            .then(function (resp) {
-                                                                console.log(resp.body);
+                                                            // .then(function (resp) {
+                                                            //     console.log(resp.body);
                                                                 needle('post', 'http://ticketsoko.nouveta.co.ke/api/index.php?function=checkTicketsPayments', {
                                                                         order_number: orderNumber
                                                                     })
@@ -299,7 +292,7 @@ function numberOfTicekts() {
 
 
                                                                     })
-                                                            })
+                                                            // })
 
 
 
