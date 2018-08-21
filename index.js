@@ -1,24 +1,12 @@
 process.env["NTBA_FIX_319"] = 1;
 const TelegramBot = require('node-telegram-bot-api')
-const token = '522240407:AAEL1Q3JrFGeOiLgSY-ctWL_pcYTyBSJLSw'
+const token = '657212118:AAEtkGmCbYLlON1bAGsPDZnoCio6tuR0I6Q'
 const axios = require('axios')
 const needle = require('needle')
-const options = {
-    webHook: {
 
-        port: process.env.VCAP_APP_PORT || 8080
-
-    }
-}
-
-
-
-const url = 'https://ticketsokochatbot-gastroenterological-danaite.eu-gb.mybluemix.net/'
-const bot = new TelegramBot(token, options)
-
-bot.setWebHook(`${url}/bot${token}`);
-
-
+const bot = new TelegramBot(token, {
+    polling: true
+});
 
 
 let events = [];
@@ -29,7 +17,10 @@ let orderNumber = '';
 let data = '';
 let status = '';
 // initialize bot
+console.log("lauched!!!!");
+
 (function () {
+    // start();
     getEvents();
     selectedEventData();
     numberOfTicekts();
@@ -104,11 +95,13 @@ function fetchEvents(msg) {
     events = []
     selectedEvent = '';
     ticketOptions = '';
-    axios.post('https://ticketsoko.nouveta.co.ke/api/index.php?function=getEvents')
+    axios.post('https://ticketsold.ticketsoko.com/api/index.php?function=getEvents')
 
         .then(response => {
+            console.log(response.data.data);
+
             const data = response.data.data
-            console.log(data);
+            console.log("here is it", data);
 
             data.forEach(event => {
                 events.push({
@@ -137,7 +130,7 @@ function fetchEvents(msg) {
             let event_names = events.map(event => {
                 return [event.name]
             })
-            bot.sendMessage(msg.chat.id, "The events are:", {
+            bot.sendMessage(msg.chat.id, "The events Are:", {
                 "reply_markup": {
                     "keyboard": event_names,
                     "hide_keyboard": false,
@@ -156,13 +149,13 @@ function selectedEventData() {
             console.log(`this is  selected event ${selectedEvent}`);
             if (selectedEvent) {
                 let mesg = `
-                              <strong>${selectedEvent.name}</strong> 
-                              <pre>
-                                  ${selectedEvent.name}
-                                  Venue: ${selectedEvent.venue}
-                                  Date: ${selectedEvent.date}   
-                              </pre> 
-                                  `
+                            <strong>${selectedEvent.name}</strong> 
+                            <pre>
+                                ${selectedEvent.name}
+                                Venue: ${selectedEvent.venue}
+                                Date: ${selectedEvent.date}   
+                            </pre> 
+                                `
 
                 bot.sendMessage(msg.chat.id, mesg, {
                         parse_mode: "HTML"
@@ -239,15 +232,13 @@ function numberOfTicekts() {
                                         bot.once("contact", function (msg) {
                                             const phoneNumber = msg.contact.phone_number
                                             console.log("selected event in contact" + JSON.stringify(selectedEvent));
-
-
-                                            needle('post', 'https://ticketsoko.nouveta.co.ke/api/index.php?function=checkOut', {
+                                            needle('post', 'https://ticketsold.ticketsoko.com/api/index.php?function=checkOut', {
                                                     valueRegular: ticketValue,
                                                     totalSum: totalAmount,
                                                     event_id: selectedEvent.id,
                                                     phone_number: phoneNumber,
                                                     event_company: selectedEvent.company,
-                                                    OptionChoiceSelectedRegular: ticketOption,
+                                                    OptionChoiceSelectedRegular: ticketOption[0],
                                                     event_image: selectedEvent.image
                                                 })
                                                 .then((resp) => {
@@ -258,41 +249,40 @@ function numberOfTicekts() {
                                                     // console.log(orderNumber);
                                                     bot.sendMessage(msg.chat.id, confirmMessage)
                                                     setTimeout(() => {
-                                                            // .then(function (resp) {
-                                                            //     console.log(resp.body);
-                                                                needle('post', 'http://ticketsoko.nouveta.co.ke/api/index.php?function=checkTicketsPayments', {
-                                                                        order_number: orderNumber
+                                                   needle('post', 'http://ticketsold.ticketsoko.com/api/index.php?function=checkTicketsPayments', {
+                                                                order_number: orderNumber
+                                                            })
+                                                            .then((resp) => {
+                                                                console.log(resp.body);
+                                                                const parseReceivedPayments = JSON.parse(resp.body)
+                                                                status = parseReceivedPayments.success
+                                                                data = parseReceivedPayments.data
+                                                                console.log(data);
+                                                                console.log(orderNumber);
+
+
+
+                                                                if (data != null) {
+                                                                    let resultString = "";
+                                                                    data.map(singleTicket => {
+                                                                        resultString += singleTicket + " \n";
+                                                                    });
+                                                                    bot.sendMessage(msg.chat.id, "request received, you'll get a confirmation shortly ").then(() => {
+                                                                        bot.sendMessage(msg.chat.id, resultString)
                                                                     })
-                                                                    .then((resp) => {
-                                                                        console.log(resp.body);
-                                                                        const parseReceivedPayments = JSON.parse(resp.body)
-                                                                        status = parseReceivedPayments.success
-                                                                        data = parseReceivedPayments.data
-                                                                        console.log(data);
-                                                                        console.log(orderNumber);
 
 
+                                                                } else if (data === null) {
+                                                                    bot.sendMessage(msg.chat.id, "Sorry, request unsuccessful")
 
-                                                                        if (data != null) {
-                                                                            let resultString = "";
-                                                                            data.map(singleTicket => {
-                                                                                resultString += singleTicket + " \n";
-                                                                            });
-                                                                            bot.sendMessage(msg.chat.id, "request received, you'll get a confirmation shortly ").then(() => {
-                                                                                bot.sendMessage(msg.chat.id, resultString)
-                                                                            })
-
-
-                                                                        } else if (data === null) {
-                                                                            bot.sendMessage(msg.chat.id, "Sorry, request unsuccessful")
-
-                                                                        }
+                                                                }
 
 
 
 
-                                                                    })
-                                                            // })
+                                                            }).catch((err)=>{
+                                                                console.log(err)
+                                                            })
 
 
 
@@ -300,6 +290,8 @@ function numberOfTicekts() {
                                                     }, 30000);
 
 
+                                                }).catch((err)=>{
+                                                    console.log(err)
                                                 })
 
 
@@ -307,7 +299,7 @@ function numberOfTicekts() {
                                         })
                                     });
                                 } else if (msg.text === "No, Cancel Request") {
-                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n send /start to view events")
+                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n send /start for a list of commands")
                                 }
                             })
                         })
@@ -331,5 +323,5 @@ bot.on("message", (msg) => {
 })
 
 bot.on('polling_error', (error) => {
-    console.log(error);
+    console.log(error.code);
 })
