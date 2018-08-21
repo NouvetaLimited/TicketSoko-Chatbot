@@ -130,7 +130,7 @@ function fetchEvents(msg) {
             let event_names = events.map(event => {
                 return [event.name]
             })
-            bot.sendMessage(msg.chat.id, "The events Are:", {
+            bot.sendMessage(msg.chat.id, "The events are:", {
                 "reply_markup": {
                     "keyboard": event_names,
                     "hide_keyboard": false,
@@ -242,7 +242,7 @@ function numberOfTicekts() {
                                                     event_image: selectedEvent.image
                                                 })
                                                 .then((resp) => {
-                                                    console.log('#####', ticketOption);
+                                                    console.log('#####', resp.body);
                                                     const ParseConfirmMessage = JSON.parse(resp.body)
                                                     const confirmMessage = ParseConfirmMessage.message;
                                                     orderNumber = ParseConfirmMessage.data
