@@ -17,7 +17,7 @@ let orderNumber = '';
 let data = '';
 let status = '';
 // initialize bot
-console.log("lauched!!!!");
+console.log(`${token} Succesfully launched`);
 
 (function () {
     // start();
@@ -80,7 +80,11 @@ const ticketNumber = [
         {
             text: "10"
         }
-    ]
+    ],
+    [{
+        text: "HOME"
+    }
+]
 ]
 
 
@@ -163,7 +167,9 @@ function selectedEventData() {
                     .then(() => {
                         ticketOptions = selectedEvent.ticketOptions.map(option => {
                             return [`${option.name.toString()} KES ${option.price.toString()}`]
-                        })
+                        });
+                        ticketOptions.push(["HOME"]);
+                        console.log("OOPS", ticketOptions);
                         bot.sendMessage(msg.chat.id, "here are the ticket  options for the event:", {
                             "reply_markup": {
                                 "keyboard": ticketOptions,
@@ -299,7 +305,7 @@ function numberOfTicekts() {
                                         })
                                     });
                                 } else if (msg.text === "No, Cancel Request") {
-                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n send /start for a list of commands")
+                                    bot.sendMessage(msg.chat.id, "You cancelled the purchase request.\n is there anything else I can do for you? \n type /start for a list of commands")
                                 }
                             })
                         })
