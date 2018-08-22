@@ -221,7 +221,7 @@ function numberOfTicekts() {
                         let price = ticketOption[0].split(' ')
                         totalAmount = Number(price[price.length - 1]) * Number(ticketValue)
 
-                        bot.sendMessage(msg.chat.id, `Your total is KES ${totalAmount}. Are you sure you want to buy?`, confirmOptions).then(() => {
+                        bot.sendMessage(msg.chat.id, `Your total is KES ${totalAmount}. Proceed to pay`, confirmOptions).then(() => {
                             bot.once("message", (msg) => {
                                 if (msg.text === "Yes") {
                                     console.log("Hello World!");
