@@ -255,7 +255,8 @@ function numberOfTicekts() {
                                                     // console.log(orderNumber);
                                                     bot.sendMessage(msg.chat.id, confirmMessage)
                                                     setTimeout(() => {
-                                                   needle('post', 'http://ticketsold.ticketsoko.com/api/index.php?function=checkTicketsPayments', {
+                        
+                                                   needle('post', 'https://ticketsold.ticketsoko.com/api/index.php?function=checkTicketsPayments', {
                                                                 order_number: orderNumber
                                                             })
                                                             .then((resp) => {
@@ -263,7 +264,7 @@ function numberOfTicekts() {
                                                                 const parseReceivedPayments = JSON.parse(resp.body)
                                                                 status = parseReceivedPayments.success
                                                                 data = parseReceivedPayments.data
-                                                                console.log(data);
+                                                                console.log("I am the culprit",data);
                                                                 console.log(orderNumber);
 
 
